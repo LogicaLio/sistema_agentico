@@ -39,9 +39,16 @@ def consultar_horario(consulta: str) -> list[Clase]:
 
     criterio = consulta.lower().strip()
 
-    return [
+    resultados = [
         clase
         for clase in horarios
         if criterio in clase["dia"].lower()
         or criterio in clase["asignatura"].lower()
     ]
+
+    # Retorno en diccionario estructurado para Gemini Function Calling
+    return {
+        "consulta": consulta,
+        "resultados": resultados,
+        "cantidad": len(resultados),
+    }
