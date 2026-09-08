@@ -4,11 +4,11 @@ from google import genai
 from google.genai import types
 
 from config.settings import GEMINI_API_KEY, GEMINI_MODEL
-from tools.horario_tool import consultar_horario
+from tools.libro_tool import consultar_libro
 
 
-class Estudiante(TypedDict):
-    """Representa la información académica básica de un estudiante."""
+class Usuario(TypedDict):
+    """Representa la información básica del usuario de la biblioteca."""
 
     nombre: str
     programa: str
@@ -19,19 +19,19 @@ class Estudiante(TypedDict):
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 
-def construir_contexto(estudiante: Estudiante, memoria: str) -> str:
-    """Construye las instrucciones de contexto para el asistente académico.
+def construir_contexto(usuario: Usuario, memoria: str) -> str:
+    """Construye las instrucciones de contexto para el asistente de biblioteca.
 
-    Combina la información actual del estudiante con la memoria reciente
+    Combina la información actual del usuario con la memoria reciente
     de la conversación y las instrucciones que determinan el comportamiento
     del modelo.
 
     El contexto también indica cuándo debe utilizarse la herramienta
-    ``consultar_horario`` y establece restricciones para evitar respuestas
-    con información de horarios no disponible.
+    ``consultar_libro`` y establece restricciones para evitar respuestas
+    con información de libros no disponible en el catálogo.
 
     Args:
-        estudiante: Información académica actual del estudiante.
+        usuario: Información básica del usuario que consulta la biblioteca.
         memoria: Representación textual de los mensajes recientes de la
             conversación.
 
@@ -39,44 +39,48 @@ def construir_contexto(estudiante: Estudiante, memoria: str) -> str:
         Instrucción de sistema que se enviará al modelo Gemini como contexto.
     """
     return f"""
-Eres un asistente académico de la Universidad Católica Luis Amigó.
+Eres el asistente virtual de la biblioteca de la Universidad Católica Luis Amigó.
 
-Ayudas al estudiante con preguntas académicas sencillas.
+Ayudas al usuario a saber si un libro está disponible y a conocer datos
+sobre él: sinopsis, autor, género, año y ubicación en la biblioteca.
 
-ESTADO ACTUAL DEL ESTUDIANTE:
-Nombre: {estudiante["nombre"]}
-Programa: {estudiante["programa"]}
-Semestre: {estudiante["semestre"]}
+ESTADO ACTUAL DEL USUARIO:
+Nombre: {usuario["nombre"]}
+Programa: {usuario["programa"]}
+Semestre: {usuario["semestre"]}
 
 MEMORIA RECIENTE:
 {memoria}
 
-Dispones de una herramienta llamada consultar_horario.
+Dispones de una herramienta llamada consultar_libro.
 
-Usa consultar_horario cuando el estudiante pregunte por horarios,
-clases, días, horas, asignaturas o aulas.
+Usa consultar_libro cuando el usuario pregunte por un libro específico:
+su disponibilidad, sinopsis, autor, género, año o ubicación.
+
+El catálogo de la biblioteca es reducido. Si consultar_libro no
+encuentra resultados, indica claramente que el libro no está en el
+catálogo consultado; no inventes datos de libros que no existan en él.
 
 Si puedes responder usando el estado o la memoria, responde directamente.
-No inventes información de horarios.
 Sé breve, claro y cordial.
 """.strip()
 
 
 def responder(
     mensaje_usuario: str,
-    estudiante: Estudiante,
+    usuario: Usuario,
     memoria: str,
 ) -> str:
-    """Genera una respuesta del asistente académico mediante Gemini.
+    """Genera una respuesta del asistente de biblioteca mediante Gemini.
 
     Construye el contexto de la conversación y envía el mensaje del
-    estudiante al modelo configurado de Gemini. El modelo puede utilizar
-    la herramienta ``consultar_horario`` cuando la consulta requiere
-    información relacionada con el horario académico.
+    usuario al modelo configurado de Gemini. El modelo puede utilizar
+    la herramienta ``consultar_libro`` cuando la consulta requiere
+    información relacionada con el catálogo de libros.
 
     Args:
-        mensaje_usuario: Mensaje enviado por el estudiante.
-        estudiante: Información académica actual del estudiante.
+        mensaje_usuario: Mensaje enviado por el usuario.
+        usuario: Información básica del usuario que consulta la biblioteca.
         memoria: Representación textual de los mensajes recientes de la
             conversación.
 
@@ -84,14 +88,14 @@ def responder(
         Respuesta textual generada por Gemini. Si el modelo no devuelve
         contenido textual, se retorna un mensaje predeterminado.
     """
-    contexto = construir_contexto(estudiante, memoria)
+    contexto = construir_contexto(usuario, memoria)
 
     response = client.models.generate_content(
         model=GEMINI_MODEL,
         contents=mensaje_usuario,
         config=types.GenerateContentConfig(
             system_instruction=contexto,
-            tools=[consultar_horario],
+            tools=[consultar_libro],
         ),
     )
 
