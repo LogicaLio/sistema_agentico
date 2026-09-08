@@ -1,18 +1,17 @@
-"""Interfaz principal del agente académico desarrollado con Streamlit.
+"""Interfaz principal del agente de biblioteca desarrollado con Streamlit.
 
-Este módulo configura y ejecuta la interfaz web del asistente académico.
-Gestiona la visualización del estado del estudiante, el historial de
+Este módulo configura y ejecuta la interfaz web del asistente de biblioteca.
+Gestiona la visualización del estado del usuario, el historial de
 conversación y la interacción entre el usuario y el agente basado en Gemini.
 
 El flujo principal de la aplicación incluye:
-
 - Validación de la configuración requerida.
 - Inicialización del estado de sesión.
-- Visualización de la información académica del estudiante.
+- Visualización de la información básica del usuario.
 - Renderizado del historial de conversación.
 - Captura de nuevos mensajes del usuario.
 - Actualización del estado y la memoria conversacional.
-- Generación de respuestas mediante el agente académico.
+- Generación de respuestas mediante el agente de biblioteca.
 - Reinicio de la conversación cuando el usuario lo solicita.
 """
 
@@ -28,12 +27,10 @@ from core.state import (
     reiniciar_estado,
 )
 
-
 st.set_page_config(
-    page_title="Agente Académico",
-    page_icon="🤖",
+    page_title="Agente de Biblioteca",
+    page_icon="📚",
 )
-
 
 # Valida que las variables necesarias para utilizar Gemini estén configuradas.
 try:
@@ -42,43 +39,37 @@ except ValueError as error:
     st.error(str(error))
     st.stop()
 
-
 # Inicializa el estado persistente de la sesión de Streamlit.
 inicializar_estado()
 
-
 # Encabezado principal de la aplicación.
-st.title("Agente Académico")
+st.title("Agente de Biblioteca")
 st.caption("Universidad Católica Luis Amigó")
-st.write("MVP con Gemini, contexto, memoria, estado y una herramienta.")
+st.write(
+    "Pregunta si un libro está disponible o consulta su sinopsis, "
+    "autor, género o ubicación. MVP con Gemini, contexto, memoria, "
+    "estado y una herramienta."
+)
 
-
-# Panel lateral con la información académica conocida del estudiante.
+# Panel lateral con la información conocida del usuario.
 with st.sidebar:
-    st.subheader("Estado del estudiante")
-
+    st.subheader("Estado del usuario")
     estudiante = st.session_state.estudiante
-
     st.write("Nombre:", estudiante["nombre"])
     st.write("Programa:", estudiante["programa"])
     st.write("Semestre:", estudiante["semestre"])
-
     st.divider()
-
     if st.button("Reiniciar conversación"):
         reiniciar_estado()
         st.rerun()
-
 
 # Renderiza el historial de mensajes almacenados en la sesión.
 for mensaje in st.session_state.mensajes:
     with st.chat_message(mensaje["role"]):
         st.markdown(mensaje["content"])
 
-
-# Captura una nueva consulta del estudiante.
-prompt = st.chat_input("Escribe tu pregunta académica...")
-
+# Captura una nueva consulta del usuario.
+prompt = st.chat_input("Pregunta por un libro o su disponibilidad...")
 if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -89,7 +80,7 @@ if prompt:
     try:
         respuesta = responder(
             mensaje_usuario=prompt,
-            estudiante=st.session_state.estudiante,
+            usuario=st.session_state.estudiante,
             memoria=obtener_memoria(),
         )
     except Exception as error:
@@ -97,7 +88,5 @@ if prompt:
 
     with st.chat_message("assistant"):
         st.markdown(respuesta)
-
     agregar_mensaje("assistant", respuesta)
-
     st.rerun()
