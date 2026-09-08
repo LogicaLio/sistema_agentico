@@ -1,38 +1,62 @@
 [
   {
-    "dia": "lunes",
-    "asignatura": "Bases de Datos",
-    "hora": "8:00 a. m. - 10:00 a. m.",
-    "aula": "Aula 301"
+    "titulo": "Cien años de soledad",
+    "autor": "Gabriel García Márquez",
+    "genero": "Realismo mágico",
+    "anio": 1967,
+    "sinopsis": "Narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo, mezclando lo real y lo fantástico.",
+    "disponible": true,
+    "ejemplares_disponibles": 2,
+    "ubicacion": "Estante A3"
   },
   {
-    "dia": "lunes",
-    "asignatura": "Programación",
-    "hora": "10:00 a. m. - 12:00 m.",
-    "aula": "Laboratorio 2"
+    "titulo": "Clean Code",
+    "autor": "Robert C. Martin",
+    "genero": "Ingeniería de software",
+    "anio": 2008,
+    "sinopsis": "Presenta principios, patrones y prácticas para escribir código legible, mantenible y de buena calidad.",
+    "disponible": true,
+    "ejemplares_disponibles": 1,
+    "ubicacion": "Estante B1"
   },
   {
-    "dia": "martes",
-    "asignatura": "Ingeniería de Software",
-    "hora": "6:00 p. m. - 8:00 p. m.",
-    "aula": "Aula 405"
+    "titulo": "Introducción a los algoritmos",
+    "autor": "Thomas H. Cormen",
+    "genero": "Ciencias de la computación",
+    "anio": 2009,
+    "sinopsis": "Texto de referencia sobre diseño y análisis de algoritmos, con explicaciones detalladas y ejemplos.",
+    "disponible": false,
+    "ejemplares_disponibles": 0,
+    "ubicacion": "Estante B2"
   },
   {
-    "dia": "miércoles",
-    "asignatura": "Matemáticas Discretas",
-    "hora": "8:00 a. m. - 10:00 a. m.",
-    "aula": "Aula 203"
+    "titulo": "1984",
+    "autor": "George Orwell",
+    "genero": "Ciencia ficción distópica",
+    "anio": 1949,
+    "sinopsis": "Retrata una sociedad totalitaria bajo la vigilancia constante del 'Gran Hermano', explorando el control social y la manipulación de la verdad.",
+    "disponible": true,
+    "ejemplares_disponibles": 3,
+    "ubicacion": "Estante A1"
   },
   {
-    "dia": "jueves",
-    "asignatura": "Bases de Datos",
-    "hora": "6:00 p. m. - 8:00 p. m.",
-    "aula": "Laboratorio 1"
+    "titulo": "El príncipe",
+    "autor": "Nicolás Maquiavelo",
+    "genero": "Filosofía política",
+    "anio": 1532,
+    "sinopsis": "Tratado sobre el poder político y las estrategias que debe seguir un gobernante para mantenerse en el poder.",
+    "disponible": true,
+    "ejemplares_disponibles": 1,
+    "ubicacion": "Estante C1"
   },
   {
-    "dia": "viernes",
-    "asignatura": "Programación",
-    "hora": "2:00 p. m. - 4:00 p. m.",
-    "aula": "Laboratorio 3"
+    "titulo": "Base de datos: diseño, implementación y administración",
+    "autor": "Carlos Coronel",
+    "genero": "Bases de datos",
+    "anio": 2017,
+    "sinopsis": "Cubre los fundamentos del modelado, diseño e implementación de bases de datos relacionales.",
+    "disponible": false,
+    "ejemplares_disponibles": 0,
+    "ubicacion": "Estante B3"
   }
 ]
