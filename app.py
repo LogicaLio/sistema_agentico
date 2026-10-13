@@ -1,92 +1,71 @@
-"""Interfaz principal del agente de biblioteca desarrollado con Streamlit.
-
-Este módulo configura y ejecuta la interfaz web del asistente de biblioteca.
-Gestiona la visualización del estado del usuario, el historial de
-conversación y la interacción entre el usuario y el agente basado en Gemini.
-
-El flujo principal de la aplicación incluye:
-- Validación de la configuración requerida.
-- Inicialización del estado de sesión.
-- Visualización de la información básica del usuario.
-- Renderizado del historial de conversación.
-- Captura de nuevos mensajes del usuario.
-- Actualización del estado y la memoria conversacional.
-- Generación de respuestas mediante el agente de biblioteca.
-- Reinicio de la conversación cuando el usuario lo solicita.
-"""
+"""Interfaz Streamlit del Agente Académico v03 (LangGraph)."""
 
 import streamlit as st
 
 from config.settings import validar_configuracion
-from core.agent import responder
-from core.state import (
-    agregar_mensaje,
-    actualizar_estado_estudiante,
-    inicializar_estado,
-    obtener_memoria,
-    reiniciar_estado,
+from core.session import (
+    enviar_mensaje,
+    inicializar_sesion,
+    obtener_grafo,
+    reiniciar_sesion,
 )
 
-st.set_page_config(
-    page_title="Agente de Biblioteca",
-    page_icon="📚",
-)
+st.set_page_config(page_title="Agente Académico v03", page_icon="🎓")
 
-# Valida que las variables necesarias para utilizar Gemini estén configuradas.
 try:
     validar_configuracion()
 except ValueError as error:
     st.error(str(error))
     st.stop()
 
-# Inicializa el estado persistente de la sesión de Streamlit.
-inicializar_estado()
+inicializar_sesion()
 
-# Encabezado principal de la aplicación.
-st.title("Agente de Biblioteca")
-st.caption("Universidad Católica Luis Amigó")
+st.title("Agente Académico v03")
+st.caption("Universidad Católica Luis Amigó · LangGraph")
 st.write(
-    "Pregunta si un libro está disponible o consulta su sinopsis, "
-    "autor, género o ubicación. MVP con Gemini, contexto, memoria, "
-    "estado y una herramienta."
+    "Consulta tu horario, actividades, calendario académico o información de "
+    "tus asignaturas, o pregunta dudas conceptuales."
 )
 
-# Panel lateral con la información conocida del usuario.
 with st.sidebar:
-    st.subheader("Estado del usuario")
-    estudiante = st.session_state.estudiante
-    st.write("Nombre:", estudiante["nombre"])
-    st.write("Programa:", estudiante["programa"])
-    st.write("Semestre:", estudiante["semestre"])
+    st.subheader("Estudiante")
+    est = st.session_state.estudiante
+    est["nombre"] = st.text_input("Nombre", est["nombre"])
+    est["programa"] = st.text_input("Programa", est["programa"])
+    est["semestre"] = st.text_input("Semestre", est["semestre"])
+
+    st.divider()
+    st.subheader("Trazabilidad")
+    st.write("Thread ID activo:")
+    st.code(st.session_state.thread_id, language=None)
+    if st.session_state.ultima_traza:
+        recorrido = ["START", *st.session_state.ultima_traza, "END"]
+        st.write("Nodos recorridos (último turno):")
+        st.code(" ➔ ".join(recorrido), language=None)
+
+    with st.expander("Diagrama del grafo (Mermaid)"):
+        st.code(obtener_grafo().get_graph().draw_mermaid(), language="text")
+
     st.divider()
     if st.button("Reiniciar conversación"):
-        reiniciar_estado()
+        reiniciar_sesion()
         st.rerun()
 
-# Renderiza el historial de mensajes almacenados en la sesión.
 for mensaje in st.session_state.mensajes:
     with st.chat_message(mensaje["role"]):
         st.markdown(mensaje["content"])
 
-# Captura una nueva consulta del usuario.
-prompt = st.chat_input("Pregunta por un libro o su disponibilidad...")
+prompt = st.chat_input("Escribe tu consulta académica...")
 if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
-
-    actualizar_estado_estudiante(prompt)
-    agregar_mensaje("user", prompt)
+    st.session_state.mensajes.append({"role": "user", "content": prompt})
 
     try:
-        respuesta = responder(
-            mensaje_usuario=prompt,
-            usuario=st.session_state.estudiante,
-            memoria=obtener_memoria(),
-        )
+        respuesta, pasos, tools = enviar_mensaje(prompt)
+        st.session_state.ultima_traza = pasos
     except Exception as error:
-        respuesta = f"Ocurrió un error al consultar Gemini: {error}"
+        respuesta = f"Ocurrió un error al consultar el agente: {error}"
 
-    with st.chat_message("assistant"):
-        st.markdown(respuesta)
-    agregar_mensaje("assistant", respuesta)
+    st.session_state.mensajes.append({"role": "assistant", "content": respuesta})
     st.rerun()
