@@ -1,10 +1,11 @@
-"""Integra Streamlit con el grafo: sesión, thread_id y ejecución de cada turno."""
+"""Integra Streamlit con el grafo: estado de sesión, thread_id y ejecución de cada turno."""
 
 import uuid
 
 import streamlit as st
-from langchain_core.messages import HumanMessage
 
+from core.ejecutor import ResultadoTurno, ejecutar_turno
+from core.errores import TurnoFallido
 from graph.workflow import crear_grafo_academico
 
 
@@ -16,18 +17,17 @@ def obtener_grafo():
 
 
 def inicializar_sesion() -> None:
-    if "thread_id" not in st.session_state:
-        st.session_state.thread_id = str(uuid.uuid4())
-    if "estudiante" not in st.session_state:
-        st.session_state.estudiante = {
-            "nombre": "Estudiante",
-            "programa": "No definido",
-            "semestre": "No definido",
-        }
-    if "mensajes" not in st.session_state:
-        st.session_state.mensajes = []  # solo para pintar la interfaz
-    if "ultima_traza" not in st.session_state:
-        st.session_state.ultima_traza = []
+    valores = {
+        "thread_id": lambda: str(uuid.uuid4()),
+        "estudiante": lambda: {"nombre": "Estudiante", "programa": "No definido", "semestre": "No definido"},
+        "mensajes": list,        # historial para pintar la interfaz
+        "ultima_traza": list,
+        "metricas_sesion": list,  # un resumen por turno
+        "pendiente": lambda: None,
+    }
+    for clave, fabrica in valores.items():
+        if clave not in st.session_state:
+            st.session_state[clave] = fabrica()
 
 
 def reiniciar_sesion() -> None:
@@ -35,27 +35,19 @@ def reiniciar_sesion() -> None:
     st.session_state.thread_id = str(uuid.uuid4())
     st.session_state.mensajes = []
     st.session_state.ultima_traza = []
+    st.session_state.metricas_sesion = []
+    st.session_state.pendiente = None
 
 
-def _texto(contenido) -> str:
-    """Gemini puede devolver el contenido como lista de partes; lo unificamos."""
-    if isinstance(contenido, str):
-        return contenido
-    return "".join(
-        p.get("text", "") if isinstance(p, dict) else str(p) for p in contenido
-    )
-
-
-def enviar_mensaje(texto: str) -> tuple[str, list[str], list[str]]:
-    """Ejecuta un turno. Devuelve (respuesta, nodos_recorridos, tools_usadas)."""
-    grafo = obtener_grafo()
-    config = {"configurable": {"thread_id": st.session_state.thread_id}}
-    estado_inicial = {
-        "messages": [HumanMessage(content=texto)],
-        "estudiante": st.session_state.estudiante,
-        "pasos_ejecutados": [],  # la traza es por turno
-        "herramientas_usadas": [],
-    }
-    resultado = grafo.invoke(estado_inicial, config=config)
-    respuesta = _texto(resultado["messages"][-1].content)
-    return respuesta, resultado.get("pasos_ejecutados", []), resultado.get("herramientas_usadas", [])
+def enviar_mensaje(texto: str) -> ResultadoTurno:
+    """Ejecuta un turno y acumula sus métricas. Si falla, lanza TurnoFallido."""
+    try:
+        resultado = ejecutar_turno(
+            obtener_grafo(), texto, st.session_state.estudiante, st.session_state.thread_id
+        )
+    except TurnoFallido as fallo:
+        st.session_state.metricas_sesion.append(fallo.metricas)
+        raise
+    st.session_state.ultima_traza = resultado.pasos
+    st.session_state.metricas_sesion.append(resultado.metricas)
+    return resultado

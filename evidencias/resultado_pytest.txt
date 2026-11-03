@@ -1,0 +1,61 @@
+============================= test session starts ==============================
+collecting ... collected 56 items
+
+tests/test_app.py::test_la_app_arranca_sin_excepciones PASSED           
+tests/test_app.py::test_enviar_un_mensaje_muestra_respuesta_y_metricas PASSED
+tests/test_app.py::test_la_memoria_acumula_turnos_y_reiniciar_la_borra PASSED
+tests/test_app.py::test_boton_de_sugerencia_envia_la_pregunta PASSED    
+tests/test_app.py::test_error_del_modelo_se_muestra_amigable_y_la_app_sigue_viva PASSED
+tests/test_app.py::test_sin_api_key_muestra_error_de_configuracion PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion0-demasiadas vueltas] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion1-l\xedmite de uso] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion2-GEMINI_API_KEY] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion3-no respondi\xf3 a tiempo] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion4-error inesperado] PASSED
+tests/test_errores.py::test_desempaqueta_turno_fallido PASSED           
+tests/test_errores.py::test_el_mensaje_no_filtra_detalles_tecnicos PASSED
+tests/test_grafo.py::test_escenarios[T01] PASSED                        
+tests/test_grafo.py::test_escenarios[T02] PASSED                        
+tests/test_grafo.py::test_escenarios[T03] PASSED                        
+tests/test_grafo.py::test_escenarios[T04] PASSED                        
+tests/test_grafo.py::test_escenarios[T05] PASSED                        
+tests/test_grafo.py::test_escenarios[T06] PASSED                        
+tests/test_grafo.py::test_escenarios[T07] PASSED                        
+tests/test_grafo.py::test_escenarios[T08] PASSED                        
+tests/test_grafo.py::test_las_metricas_del_turno_son_coherentes PASSED  
+tests/test_grafo.py::test_la_memoria_persiste_en_el_hilo_y_se_aisla_entre_hilos PASSED
+tests/test_grafo.py::test_la_traza_es_por_turno_no_acumulada PASSED     
+tests/test_grafo.py::test_respaldo_si_el_enrutador_no_devuelve_json_valido PASSED
+tests/test_grafo.py::test_bucle_de_herramientas_se_corta_por_limite_de_recursion PASSED
+tests/test_grafo.py::test_error_del_modelo_se_registra_y_se_propaga PASSED
+tests/test_grafo.py::test_cada_turno_queda_en_el_jsonl PASSED           
+tests/test_grafo.py::test_ventana_recorta_y_empieza_en_un_mensaje_humano PASSED
+tests/test_grafo.py::test_ventana_nunca_deja_un_toolmessage_huerfano PASSED
+tests/test_grafo.py::test_ventana_no_toca_historiales_cortos PASSED     
+tests/test_grafo.py::test_la_ventana_reduce_el_contexto_enviado_al_modelo PASSED
+tests/test_metricas.py::test_extraer_tokens PASSED                      
+tests/test_metricas.py::test_cerrar_turno_agrega_eventos_y_escribe_jsonl PASSED
+tests/test_metricas.py::test_eventos_de_un_turno_no_se_mezclan_con_otro PASSED
+tests/test_metricas.py::test_fallo_de_escritura_no_rompe PASSED         
+tests/test_metricas.py::test_resumen_global PASSED                      
+tests/test_rag.py::test_tokenizar_quita_tildes_stopwords_y_plurales PASSED
+tests/test_rag.py::test_fragmentos_respetan_el_maximo PASSED            
+tests/test_rag.py::test_fragmentos_no_mezclan_secciones PASSED          
+tests/test_rag.py::test_titulo_sin_contenido_se_une_a_la_seccion_siguiente PASSED
+tests/test_rag.py::test_sinonimos_estudiantiles PASSED                  
+tests/test_rag.py::test_indice_cubre_los_documentos_de_ejemplo PASSED   
+tests/test_rag.py::test_recupera_el_documento_correcto PASSED           
+tests/test_rag.py::test_consulta_sin_relacion_no_devuelve_nada PASSED   
+tests/test_rag.py::test_indice_vacio_no_falla PASSED                    
+tests/test_rag.py::test_lee_pdf PASSED                                  
+tests/test_tools.py::test_catalogo_tiene_7_herramientas_con_descripcion PASSED
+tests/test_tools.py::test_obtener_fecha PASSED                          
+tests/test_tools.py::test_horario_por_dia_y_por_asignatura PASSED       
+tests/test_tools.py::test_horario_sin_resultados PASSED                 
+tests/test_tools.py::test_actividades_filtro_y_sin_filtro PASSED        
+tests/test_tools.py::test_priorizar_ordena_por_urgencia PASSED          
+tests/test_tools.py::test_calendario_y_asignatura PASSED                
+tests/test_tools.py::test_rag_tool_devuelve_fuente_y_texto PASSED       
+tests/test_tools.py::test_rag_tool_sin_resultados PASSED                
+
+============================== 56 passed in 3.08s ==============================

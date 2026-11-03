@@ -1,0 +1,8 @@
+[
+  {"dia": "lunes", "asignatura": "Bases de Datos", "hora_inicio": "08:00", "hora_fin": "10:00", "aula": "Aula 301"},
+  {"dia": "lunes", "asignatura": "Programación", "hora_inicio": "10:00", "hora_fin": "12:00", "aula": "Laboratorio 2"},
+  {"dia": "martes", "asignatura": "Sistemas Agénticos", "hora_inicio": "14:00", "hora_fin": "16:00", "aula": "Laboratorio 1"},
+  {"dia": "miércoles", "asignatura": "Matemáticas Discretas", "hora_inicio": "08:00", "hora_fin": "10:00", "aula": "Aula 205"},
+  {"dia": "jueves", "asignatura": "Pruebas de Software", "hora_inicio": "10:00", "hora_fin": "12:00", "aula": "Aula 310"},
+  {"dia": "viernes", "asignatura": "Redes", "hora_inicio": "08:00", "hora_fin": "11:00", "aula": "Laboratorio 3"}
+]

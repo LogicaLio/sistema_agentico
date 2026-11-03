@@ -1,0 +1,7 @@
+[
+  {"id": 1, "titulo": "Taller de Cuantificadores anidados", "asignatura": "Matemáticas Discretas", "fecha_entrega": "2026-10-15", "prioridad": "alta", "estado": "pendiente"},
+  {"id": 2, "titulo": "Práctica de Packet Tracer", "asignatura": "Redes", "fecha_entrega": "2026-10-16", "prioridad": "media", "estado": "pendiente"},
+  {"id": 3, "titulo": "Avance proyecto sistema agéntico v03", "asignatura": "Sistemas Agénticos", "fecha_entrega": "2026-10-20", "prioridad": "alta", "estado": "pendiente"},
+  {"id": 4, "titulo": "Informe de validación con Selenium", "asignatura": "Pruebas de Software", "fecha_entrega": "2026-10-25", "prioridad": "media", "estado": "pendiente"},
+  {"id": 5, "titulo": "Lectura capítulo 4", "asignatura": "Bases de Datos", "fecha_entrega": "2026-10-30", "prioridad": "baja", "estado": "pendiente"}
+]
