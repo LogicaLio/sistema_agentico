@@ -1,5 +1,5 @@
 ============================= test session starts ==============================
-collecting ... collected 56 items
+collecting ... collected 67 items
 
 tests/test_app.py::test_la_app_arranca_sin_excepciones PASSED           
 tests/test_app.py::test_enviar_un_mensaje_muestra_respuesta_y_metricas PASSED
@@ -12,8 +12,15 @@ tests/test_errores.py::test_mensajes_amigables[excepcion1-l\xedmite de uso] PASS
 tests/test_errores.py::test_mensajes_amigables[excepcion2-GEMINI_API_KEY] PASSED
 tests/test_errores.py::test_mensajes_amigables[excepcion3-no respondi\xf3 a tiempo] PASSED
 tests/test_errores.py::test_mensajes_amigables[excepcion4-error inesperado] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion5-GEMINI_MODEL] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion6-saturado] PASSED
 tests/test_errores.py::test_desempaqueta_turno_fallido PASSED           
 tests/test_errores.py::test_el_mensaje_no_filtra_detalles_tecnicos PASSED
+tests/test_errores.py::test_clasifica_errores_transitorios[503 UNAVAILABLE high demand-True] PASSED
+tests/test_errores.py::test_clasifica_errores_transitorios[429 RESOURCE_EXHAUSTED-True] PASSED
+tests/test_errores.py::test_clasifica_errores_transitorios[request timed out-True] PASSED
+tests/test_errores.py::test_clasifica_errores_transitorios[404 NOT_FOUND model-False] PASSED
+tests/test_errores.py::test_clasifica_errores_transitorios[API key not valid-False] PASSED
 tests/test_grafo.py::test_escenarios[T01] PASSED                        
 tests/test_grafo.py::test_escenarios[T02] PASSED                        
 tests/test_grafo.py::test_escenarios[T03] PASSED                        
@@ -48,6 +55,10 @@ tests/test_rag.py::test_recupera_el_documento_correcto PASSED
 tests/test_rag.py::test_consulta_sin_relacion_no_devuelve_nada PASSED   
 tests/test_rag.py::test_indice_vacio_no_falla PASSED                    
 tests/test_rag.py::test_lee_pdf PASSED                                  
+tests/test_reintentos.py::test_reintenta_y_termina_bien PASSED          
+tests/test_reintentos.py::test_no_reintenta_errores_permanentes PASSED  
+tests/test_reintentos.py::test_el_ultimo_intento_propaga_el_error PASSED
+tests/test_reintentos.py::test_sin_fallos_no_hay_reintentos PASSED      
 tests/test_tools.py::test_catalogo_tiene_7_herramientas_con_descripcion PASSED
 tests/test_tools.py::test_obtener_fecha PASSED                          
 tests/test_tools.py::test_horario_por_dia_y_por_asignatura PASSED       
@@ -58,4 +69,4 @@ tests/test_tools.py::test_calendario_y_asignatura PASSED
 tests/test_tools.py::test_rag_tool_devuelve_fuente_y_texto PASSED       
 tests/test_tools.py::test_rag_tool_sin_resultados PASSED                
 
-============================== 56 passed in 3.08s ==============================
+============================== 67 passed in 3.16s ==============================

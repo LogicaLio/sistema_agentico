@@ -31,7 +31,7 @@ graph TD;
 
 | Componente | Implementación |
 |---|---|
-| **LangChain** | `ChatGoogleGenerativeAI` (Gemini 2.5 Flash), `@tool`, salida estructurada con Pydantic |
+| **LangChain** | `ChatGoogleGenerativeAI` (Gemini Flash; el modelo se define en `GEMINI_MODEL`), `@tool`, salida estructurada con Pydantic |
 | **LangGraph** | `StateGraph` con aristas condicionales, ciclo ReAct y `ToolNode` (`graph/`) |
 | **Memoria** | `MemorySaver` (checkpointer) con un `thread_id` por conversación |
 | **Estado** | `AcademicState`: mensajes (reducer `add_messages`), estudiante, ruta, traza de nodos, herramientas |
@@ -52,7 +52,7 @@ graph TD;
 ├── observabilidad/         # Registro de métricas (JSONL)
 ├── ui/estilos.py           # Tema, CSS y componentes visuales
 ├── data/                   # horarios, actividades, calendario, asignaturas + conocimiento/
-├── tests/                  # 56 pruebas automáticas
+├── tests/                  # 67 pruebas automáticas
 ├── scripts/generar_evidencias.py
 ├── evidencias/             # Informes de pruebas, métricas y hallazgos
 ├── .streamlit/config.toml  # Tema de Streamlit
@@ -73,7 +73,7 @@ Crea un archivo `.env` en la raíz (nunca lo subas a Git; ya está en `.gitignor
 
 ```
 GEMINI_API_KEY=tu_api_key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 ```
 
 Obtén una clave gratuita en [Google AI Studio](https://aistudio.google.com/). Luego:
@@ -90,7 +90,7 @@ Abre `http://localhost:8501`.
 |---|---|---|
 | `MAX_MENSAJES_CONTEXTO` | 14 | Ventana deslizante del historial enviado al modelo |
 | `RECURSION_LIMIT` | 12 | Tope de pasos del grafo por turno (evita bucles de herramientas) |
-| `LLM_TIMEOUT` / `LLM_MAX_RETRIES` | 60 / 2 | Tiempo máximo y reintentos por llamada al modelo |
+| `LLM_TIMEOUT` / `LLM_MAX_RETRIES` | 60 / 4 | Tiempo máximo y reintentos por llamada al modelo |
 | `LOG_DIR` | `logs/` | Dónde se escribe `metricas.jsonl` |
 
 ## Datos y base de conocimiento (RAG)
@@ -115,7 +115,7 @@ pip install -r requirements-dev.txt
 python -m pytest -v
 ```
 
-56 pruebas automáticas, sin API Key ni red (modelo simulado) y con sus propios datos en
+67 pruebas automáticas, sin API Key ni red (modelo simulado) y con sus propios datos en
 `tests/datos_prueba/` (no dependen de tus datos reales de `data/`), que cubren las 7 herramientas, el RAG
 (recuperación y PDF), el grafo completo (8 escenarios de rutas, memoria por hilo, límite de recursión,
 respaldo del enrutador, ventana de contexto), las métricas, los errores y la **interfaz Streamlit completa**
@@ -147,7 +147,7 @@ En `evidencias/`:
 | `informe_pruebas_simulado.md` | Matriz de pruebas (esperado y obtenido), métricas y experimento de ventana de contexto |
 | `informe_pruebas_real.md` | Lo mismo con Gemini real _(se genera con `--modo real`)_ |
 | `hallazgos.md` | Hallazgos, acciones correctivas y verificación |
-| `resultado_pytest.txt` | Salida detallada de las 56 pruebas |
+| `resultado_pytest.txt` | Salida detallada de las 67 pruebas |
 | `capturas/` | Capturas de la interfaz en escritorio y celular (tomadas con el modelo simulado) |
 | `metricas_*.csv` / `.jsonl` | Métricas por turno |
 

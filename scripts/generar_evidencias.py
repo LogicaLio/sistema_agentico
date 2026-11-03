@@ -35,6 +35,7 @@ if args.modo == "real":
 import graph.nodes as nodes  # noqa: E402
 from core.ejecutor import ejecutar_turno  # noqa: E402
 from core.errores import TurnoFallido, mensaje_amigable  # noqa: E402
+from core.reintentos import con_reintentos  # noqa: E402
 from graph.workflow import crear_grafo_academico  # noqa: E402
 from observabilidad.metricas import REGISTRO, resumen_global  # noqa: E402
 from tests.escenarios import ESCENARIOS, ESTUDIANTE, plan_simulado  # noqa: E402
@@ -60,6 +61,27 @@ if args.modo == "simulado":
     datos_prueba.activar()
 
 
+REINTENTOS = 0  # reintentos por errores transitorios del servicio (solo modo real)
+
+
+def turno(grafo, pregunta, hilo, mismo_hilo=False):
+    """Ejecuta un turno. En modo real reintenta si Google responde 503 (saturado), 429 o timeout.
+    En cada reintento usa un hilo nuevo, salvo que se pida el mismo (experimento de ventana)."""
+    global REINTENTOS
+    intentos = {"n": 0}
+
+    def llamar():
+        intentos["n"] += 1
+        h = hilo if (mismo_hilo or intentos["n"] == 1) else f"{hilo}-reintento{intentos['n'] - 1}"
+        return ejecutar_turno(grafo, pregunta, ESTUDIANTE, h)
+
+    if args.modo != "real":
+        return llamar()
+    resultado, reintentos = con_reintentos(llamar, intentos=4, espera=10)
+    REINTENTOS += reintentos
+    return resultado
+
+
 def flecha(lista):
     return " ➔ ".join(lista) if lista else "—"
 
@@ -69,7 +91,7 @@ filas, turnos = [], []
 for id_, func, pregunta, pasos_esp, tools_esp in ESCENARIOS:
     grafo = crear_grafo_academico()
     try:
-        r = ejecutar_turno(grafo, pregunta, ESTUDIANTE, f"evid-{args.modo}-{id_}")
+        r = turno(grafo, pregunta, f"evid-{args.modo}-{id_}")
         ok_ruta = r.pasos[:2] == pasos_esp[:2] and (
             ("nodo_conceptual" in r.pasos) == ("nodo_conceptual" in pasos_esp)
         )
@@ -97,7 +119,7 @@ def correr_conversacion(maximo: int, rondas: int = 8):
     grafo = crear_grafo_academico()
     serie = []
     for i in range(rondas):
-        r = ejecutar_turno(grafo, "¿Qué clases tengo el lunes?", ESTUDIANTE, f"ventana-{args.modo}-{maximo}")
+        r = turno(grafo, "¿Qué clases tengo el lunes?", f"ventana-{args.modo}-{maximo}", mismo_hilo=True)
         serie.append((r.metricas["chars_contexto_max"], r.metricas["tokens_entrada"]))
         if args.modo == "real":
             time.sleep(1.5)
@@ -105,11 +127,19 @@ def correr_conversacion(maximo: int, rondas: int = 8):
 
 
 original = settings.MAX_MENSAJES_CONTEXTO
-sin_ventana = correr_conversacion(0)
-con_ventana = correr_conversacion(14)
-settings.MAX_MENSAJES_CONTEXTO = original
-ahorro_chars = 1 - con_ventana[-1][0] / sin_ventana[-1][0] if sin_ventana[-1][0] else 0
-ahorro_tokens = 1 - con_ventana[-1][1] / sin_ventana[-1][1] if sin_ventana[-1][1] else 0
+experimento_ok, error_experimento = True, ""
+try:
+    sin_ventana = correr_conversacion(0)
+    con_ventana = correr_conversacion(14)
+except TurnoFallido as fallo:  # no perder el informe completo si el servicio falla aquí
+    experimento_ok, error_experimento = False, mensaje_amigable(fallo)
+    sin_ventana = con_ventana = []
+finally:
+    settings.MAX_MENSAJES_CONTEXTO = original
+ahorro_chars = ahorro_tokens = 0
+if experimento_ok:
+    ahorro_chars = 1 - con_ventana[-1][0] / sin_ventana[-1][0] if sin_ventana[-1][0] else 0
+    ahorro_tokens = 1 - con_ventana[-1][1] / sin_ventana[-1][1] if sin_ventana[-1][1] else 0
 
 # ------------------------- 3. Escribir el informe -------------------------
 todos = [t for t in turnos if t]  # solo los turnos de la matriz (el experimento de ventana va aparte)
@@ -120,7 +150,10 @@ L = []
 L.append(f"# Informe de pruebas y métricas — modo {args.modo.upper()}\n")
 L.append(f"- Fecha de ejecución: {time.strftime('%Y-%m-%d %H:%M')}")
 L.append(f"- Modelo: {'Gemini real (' + settings.GEMINI_MODEL + ')' if args.modo == 'real' else 'MODELO SIMULADO (sin red ni API Key): valida orquestación, no la calidad del LLM'}")
-L.append(f"- Resultado: **{aprobadas}/{len(filas)} escenarios cumplen**\n")
+L.append(f"- Resultado: **{aprobadas}/{len(filas)} escenarios cumplen**")
+if args.modo == "real":
+    L.append(f"- Reintentos por saturación o límites temporales del servicio (503/429/timeout): {REINTENTOS}")
+L.append("")
 L.append("## 1. Pruebas funcionales de integración (LangChain · LangGraph · memoria · estado · RAG · Tools)\n")
 L.append("| ID | Funcionalidad | Pregunta | Resultado esperado | Resultado obtenido | Estado | Llamadas LLM | Tokens | Latencia (ms) |")
 L.append("|---|---|---|---|---|---|---|---|---|")
@@ -139,14 +172,17 @@ L.append("\n**Uso de herramientas**\n\n| Herramienta | Invocaciones |\n|---|---|
 for nombre, n in sorted(g["uso_herramientas"].items(), key=lambda x: -x[1]):
     L.append(f"| `{nombre}` | {n} |")
 L.append("\n## 3. Optimización: ventana deslizante de contexto\n")
-L.append("Se repitió la misma consulta 8 veces en un mismo hilo, sin ventana y con ventana de 14 mensajes. "
-         "Se mide el contexto más grande enviado al modelo en cada turno.\n")
-L.append("| Turno | Sin ventana (caracteres) | Con ventana (caracteres) | Sin ventana (tokens entrada) | Con ventana (tokens entrada) |")
-L.append("|---|---|---|---|---|")
-for i, (a, b) in enumerate(zip(sin_ventana, con_ventana), 1):
-    L.append(f"| {i} | {a[0]:,} | {b[0]:,} | {a[1]:,} | {b[1]:,} |".replace(",", "."))
-L.append(f"\n**Reducción en el turno 8:** {ahorro_chars:.0%} de caracteres y {ahorro_tokens:.0%} de tokens de entrada. "
-         "Sin ventana el contexto crece con cada turno (crecimiento acumulativo); con ventana se estabiliza.")
+if experimento_ok:
+    L.append("Se repitió la misma consulta 8 veces en un mismo hilo, sin ventana y con ventana de 14 mensajes. "
+             "Se mide el contexto más grande enviado al modelo en cada turno.\n")
+    L.append("| Turno | Sin ventana (caracteres) | Con ventana (caracteres) | Sin ventana (tokens entrada) | Con ventana (tokens entrada) |")
+    L.append("|---|---|---|---|---|")
+    for i, (a, b) in enumerate(zip(sin_ventana, con_ventana), 1):
+        L.append(f"| {i} | {a[0]:,} | {b[0]:,} | {a[1]:,} | {b[1]:,} |".replace(",", "."))
+    L.append(f"\n**Reducción en el turno 8:** {ahorro_chars:.0%} de caracteres y {ahorro_tokens:.0%} de tokens de entrada. "
+             "Sin ventana el contexto crece con cada turno (crecimiento acumulativo); con ventana se estabiliza.")
+else:
+    L.append(f"⚠️ El experimento no pudo completarse: {error_experimento} Vuelve a ejecutar el script más tarde.")
 if args.modo == "simulado":
     L.append("\n> Los tokens del modo simulado se estiman como caracteres/4. Repite con `--modo real` para tokens reales de Gemini.")
 
@@ -165,6 +201,6 @@ with open(EVID / f"metricas_{args.modo}.csv", "w", newline="", encoding="utf-8")
         w.writerow({**t, "herramientas": "|".join(t.get("herramientas", []))})
 
 print(f"{aprobadas}/{len(filas)} escenarios cumplen · reducción ventana (turno 8): "
-      f"{ahorro_chars:.0%} chars / {ahorro_tokens:.0%} tokens")
+      + (f"{ahorro_chars:.0%} chars / {ahorro_tokens:.0%} tokens" if experimento_ok else "no disponible"))
 print(f"Informe: {EVID / f'informe_pruebas_{args.modo}.md'}")
 sys.exit(0 if aprobadas == len(filas) else 1)

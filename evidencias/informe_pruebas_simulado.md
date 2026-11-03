@@ -1,6 +1,6 @@
 # Informe de pruebas y métricas — modo SIMULADO
 
-- Fecha de ejecución: 2026-11-02 18:08
+- Fecha de ejecución: 2026-11-02 19:08
 - Modelo: MODELO SIMULADO (sin red ni API Key): valida orquestación, no la calidad del LLM
 - Resultado: **8/8 escenarios cumplen**
 
@@ -9,13 +9,13 @@
 | ID | Funcionalidad | Pregunta | Resultado esperado | Resultado obtenido | Estado | Llamadas LLM | Tokens | Latencia (ms) |
 |---|---|---|---|---|---|---|---|---|
 | T01 | Ruta conceptual (sin herramientas) | ¿Qué es un crédito académico? | enrutador ➔ nodo_conceptual · tools: — | enrutador ➔ nodo_conceptual · tools: — | ✅ Cumple | 2 | 209 | 6 |
-| T02 | Tool consultar_horario | ¿Qué clases tengo el lunes? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_horario | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_horario | ✅ Cumple | 3 | 545 | 7 |
-| T03 | Ciclo ReAct con 2 herramientas | ¿Hoy tengo clase? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: obtener_fecha, consultar_horario | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: obtener_fecha, consultar_horario | ✅ Cumple | 4 | 686 | 9 |
-| T04 | Tool priorizar_actividades | Prioriza mis actividades pendientes | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: priorizar_actividades | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: priorizar_actividades | ✅ Cumple | 3 | 725 | 6 |
+| T02 | Tool consultar_horario | ¿Qué clases tengo el lunes? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_horario | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_horario | ✅ Cumple | 3 | 545 | 8 |
+| T03 | Ciclo ReAct con 2 herramientas | ¿Hoy tengo clase? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: obtener_fecha, consultar_horario | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: obtener_fecha, consultar_horario | ✅ Cumple | 4 | 686 | 10 |
+| T04 | Tool priorizar_actividades | Prioriza mis actividades pendientes | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: priorizar_actividades | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: priorizar_actividades | ✅ Cumple | 3 | 725 | 7 |
 | T05 | Tool consultar_calendario_academico | ¿Cuándo terminan las clases? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_calendario_academico | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_calendario_academico | ✅ Cumple | 3 | 489 | 6 |
 | T06 | Tool consultar_informacion_asignatura | ¿Cuántos créditos tiene Sistemas Agénticos? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_informacion_asignatura | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_informacion_asignatura | ✅ Cumple | 3 | 532 | 6 |
-| T07 | Tool consultar_actividades | Muéstrame las actividades de Redes | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_actividades | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_actividades | ✅ Cumple | 3 | 529 | 6 |
-| T08 | RAG: base de conocimiento | ¿Qué pasa si tengo muchas faltas por inasistencia? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_base_conocimiento | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_base_conocimiento | ✅ Cumple | 3 | 583 | 6 |
+| T07 | Tool consultar_actividades | Muéstrame las actividades de Redes | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_actividades | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_actividades | ✅ Cumple | 3 | 529 | 8 |
+| T08 | RAG: base de conocimiento | ¿Qué pasa si tengo muchas faltas por inasistencia? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_base_conocimiento | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_base_conocimiento | ✅ Cumple | 3 | 583 | 7 |
 
 ## 2. Métricas de observabilidad
 
@@ -24,8 +24,8 @@
 | Turnos ejecutados | 8 |
 | Llamadas totales al modelo | 24 |
 | Tokens totales | 4.298 |
-| Latencia media por turno | 6 ms |
-| Latencia p95 | 9 ms |
+| Latencia media por turno | 7 ms |
+| Latencia p95 | 10 ms |
 | Errores | 0 |
 
 **Uso de herramientas**
@@ -63,8 +63,8 @@ Se repitió la misma consulta 8 veces en un mismo hilo, sin ventana y con ventan
 
 Cada hallazgo indica cómo se detectó, la acción correctiva y cómo se verificó. Los hallazgos H1 a H8 se
 detectaron durante el desarrollo (pruebas automáticas, revisión del código de la v03, revisión visual
-de la interfaz e integración al repositorio); H9 en adelante son para que completes con lo que encuentres
-al probar con Gemini real.
+de la interfaz e integración al repositorio); H9 y H10 aparecieron al probar con Gemini real; H11 en
+adelante son para que completes con lo que encuentres en tus siguientes ejecuciones.
 
 | ID | Hallazgo | Cómo se detectó | Acción correctiva | Verificación |
 |---|---|---|---|---|
@@ -75,6 +75,8 @@ al probar con Gemini real.
 | H5 | Los errores del modelo (cuota 429, clave inválida, timeout) llegaban al estudiante como texto técnico, con riesgo de mostrar datos internos. | Revisión de la v03 | `core/errores.py` traduce cada tipo de fallo a un mensaje claro sin detalles técnicos | `tests/test_errores.py` y `test_error_del_modelo_se_muestra_amigable_y_la_app_sigue_viva` |
 | H6 | En escritorio, el borde superior del encabezado azul quedaba tapado por la barra de Streamlit. | Revisión visual con capturas de pantalla de la app en ejecución (Chromium) | Se aumentó el `padding-top` del contenedor principal en `ui/estilos.py` | Nueva captura: el encabezado se ve completo |
 | H7 | En celular, la barra lateral se abría por defecto y cubría todo el chat: al entrar, el estudiante no veía la conversación. | Revisión visual con captura a 390 px de ancho | `initial_sidebar_state="auto"` (abierta en escritorio y cerrada en celular) | Nueva captura a 390 px: se ve el chat y la barra se abre con el botón ☰ |
-| H8 | Las pruebas comprobaban valores de los datos de ejemplo (por ejemplo, 5 actividades o el fin de clases el 27 de noviembre) y habrían fallado al reemplazar `data/` por datos reales. | Revisión de la integración al repositorio real (`git status` y `git diff`) | Datos propios de las pruebas en `tests/datos_prueba/` y fixture automático (`tests/datos.py`, `conftest.py`); el índice RAG lee su carpeta al usarse | Las 56 pruebas pasan también con `data/` vaciado y con otro contenido |
-| H9 | _(completa con lo que encuentres al probar con Gemini real)_ | | | |
+| H8 | Las pruebas comprobaban valores de los datos de ejemplo (por ejemplo, 5 actividades o el fin de clases el 27 de noviembre) y habrían fallado al reemplazar `data/` por datos reales. | Revisión de la integración al repositorio real (`git status` y `git diff`) | Datos propios de las pruebas en `tests/datos_prueba/` y fixture automático (`tests/datos.py`, `conftest.py`); el índice RAG lee su carpeta al usarse | Las 67 pruebas pasan también con `data/` vaciado y con otro contenido |
+| H9 | Al probar con Gemini real, la app respondía siempre "Ocurrió un error inesperado". El log (`logs/metricas.jsonl`) mostró `404 NOT_FOUND`: el modelo `gemini-2.5-flash` ya no está disponible para cuentas nuevas. | Prueba manual con Gemini real y lectura del campo `error` del registro de observabilidad | Modelo por defecto actualizado a `gemini-3.8-flash` (código, `render.yaml`, README y `.env.example`; sigue siendo configurable con `GEMINI_MODEL`) y mensaje claro para este caso en `core/errores.py` | La app dejó de devolver 404 con el modelo nuevo; prueba `test_mensajes_amigables` |
+| H10 | Con el modelo nuevo apareció `503 UNAVAILABLE: high demand`: saturación temporal del servicio de Google. La app lo mostraba como fallo de conexión. | Prueba manual con Gemini real y lectura del registro de observabilidad | Mensaje específico de saturación, más reintentos por llamada (`LLM_MAX_RETRIES`, 4 por defecto) y reintentos con espera creciente en el generador de evidencias real (`core/reintentos.py`) | Pruebas `test_reintentos.py` y `test_clasifica_errores_transitorios`. Confirma en tu ejecución real con `--modo real` (el informe indica cuántos reintentos hubo) |
+| H11 | _(completa con lo que encuentres al probar con Gemini real)_ | | | |
 
