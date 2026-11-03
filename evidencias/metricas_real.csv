@@ -1,0 +1,9 @@
+ts,turno_id,pregunta,ruta,llamadas_llm,tokens_entrada,tokens_salida,tokens_total,ms_llm,ms_tools,latencia_ms,herramientas,errores_tools,error
+2026-11-02T22:51:36,e0359be7,¿Qué es un crédito académico?,conceptual,2,179,353,532,3383.4,0,4190.4,,0,
+2026-11-02T22:51:50,b180192b,¿Qué clases tengo el lunes?,herramientas,3,1593,142,1735,2713.0,1.6,2734.8,consultar_horario,0,
+2026-11-02T22:52:12,c25c15a4,¿Hoy tengo clase?,herramientas,4,2349,145,2494,3232.5,7.0,3248.0,obtener_fecha|consultar_horario,0,
+2026-11-02T22:52:39,bc64e122,Prioriza mis actividades pendientes,herramientas,3,1812,296,2108,3321.8,1.5,3330.6,priorizar_actividades,0,
+2026-11-02T22:52:59,3f378d6f,¿Cuándo terminan las clases?,herramientas,3,1531,80,1611,2416.5,10.8,2437.0,consultar_calendario_academico,0,
+2026-11-02T22:53:21,33f1f0b2,¿Cuántos créditos tiene Sistemas Agénticos?,herramientas,3,1547,82,1629,3188.2,9.8,3205.9,consultar_informacion_asignatura,0,
+2026-11-02T22:53:41,39f7c6ab,Muéstrame las actividades de Redes,herramientas,3,1554,120,1674,2727.4,1.7,2736.2,consultar_actividades,0,
+2026-11-02T22:54:02,f460d35c,¿Qué pasa si tengo muchas faltas por inasistencia?,herramientas,3,1670,189,1859,2780.4,3.3,2789.4,consultar_base_conocimiento,0,

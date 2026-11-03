@@ -1,5 +1,12 @@
-venv/
-.venv/
+# Secretos
+.env
+
+# Python
 __pycache__/
 *.pyc
-.env
+.venv/
+venv/
+.pytest_cache/
+
+# Registros locales (se regeneran al usar la app)
+logs/

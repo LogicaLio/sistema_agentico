@@ -1,0 +1,8 @@
+[
+  {"nombre": "Bases de Datos", "creditos": 3, "descripcion": "Modelado relacional, SQL y diseño de bases de datos."},
+  {"nombre": "Programación", "creditos": 3, "descripcion": "Programación orientada a objetos y buenas prácticas de código."},
+  {"nombre": "Sistemas Agénticos", "creditos": 3, "descripcion": "Diseño de agentes de IA con herramientas, memoria y orquestación."},
+  {"nombre": "Matemáticas Discretas", "creditos": 3, "descripcion": "Lógica, cuantificadores, conjuntos y relaciones."},
+  {"nombre": "Pruebas de Software", "creditos": 3, "descripcion": "Calidad, niveles y tipos de pruebas, automatización con Selenium."},
+  {"nombre": "Redes", "creditos": 3, "descripcion": "Fundamentos de redes, direccionamiento y simulación en Packet Tracer."}
+]

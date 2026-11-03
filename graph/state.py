@@ -20,3 +20,4 @@ class AcademicState(TypedDict, total=False):
     motivo: str
     herramientas_usadas: list[str]
     pasos_ejecutados: list[str]  # Traza de nodos recorridos en el turno
+    turno_id: str  # Identifica el turno para agrupar sus métricas
