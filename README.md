@@ -152,7 +152,7 @@ En `evidencias/`:
 | `metricas_*.csv` / `.jsonl` | Métricas por turno |
 
 Ajustes principales: fragmentación por secciones y sinónimos en el RAG, ventana deslizante de contexto
-(en el experimento, −50 % de contexto enviado en el turno 8), límite de recursión, ruta de respaldo del
+(con Gemini real, −17 % de caracteres y −14 % de tokens de entrada enviados en el turno 8), límite de recursión, ruta de respaldo del
 enrutador y mensajes de error amigables.
 
 ## Despliegue en Render
