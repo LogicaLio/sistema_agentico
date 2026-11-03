@@ -52,7 +52,7 @@ graph TD;
 ├── observabilidad/         # Registro de métricas (JSONL)
 ├── ui/estilos.py           # Tema, CSS y componentes visuales
 ├── data/                   # horarios, actividades, calendario, asignaturas + conocimiento/
-├── tests/                  # 67 pruebas automáticas
+├── tests/                  # 70 pruebas automáticas
 ├── scripts/generar_evidencias.py
 ├── evidencias/             # Informes de pruebas, métricas y hallazgos
 ├── .streamlit/config.toml  # Tema de Streamlit
@@ -73,7 +73,7 @@ Crea un archivo `.env` en la raíz (nunca lo subas a Git; ya está en `.gitignor
 
 ```
 GEMINI_API_KEY=tu_api_key
-GEMINI_MODEL=gemini-3.8-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 ```
 
 Obtén una clave gratuita en [Google AI Studio](https://aistudio.google.com/). Luego:
@@ -90,7 +90,7 @@ Abre `http://localhost:8501`.
 |---|---|---|
 | `MAX_MENSAJES_CONTEXTO` | 14 | Ventana deslizante del historial enviado al modelo |
 | `RECURSION_LIMIT` | 12 | Tope de pasos del grafo por turno (evita bucles de herramientas) |
-| `LLM_TIMEOUT` / `LLM_MAX_RETRIES` | 60 / 4 | Tiempo máximo y reintentos por llamada al modelo |
+| `LLM_TIMEOUT` / `LLM_MAX_RETRIES` | 60 / 2 | Tiempo máximo y reintentos por llamada al modelo |
 | `LOG_DIR` | `logs/` | Dónde se escribe `metricas.jsonl` |
 
 ## Datos y base de conocimiento (RAG)
@@ -115,7 +115,7 @@ pip install -r requirements-dev.txt
 python -m pytest -v
 ```
 
-67 pruebas automáticas, sin API Key ni red (modelo simulado) y con sus propios datos en
+70 pruebas automáticas, sin API Key ni red (modelo simulado) y con sus propios datos en
 `tests/datos_prueba/` (no dependen de tus datos reales de `data/`), que cubren las 7 herramientas, el RAG
 (recuperación y PDF), el grafo completo (8 escenarios de rutas, memoria por hilo, límite de recursión,
 respaldo del enrutador, ventana de contexto), las métricas, los errores y la **interfaz Streamlit completa**
@@ -147,7 +147,7 @@ En `evidencias/`:
 | `informe_pruebas_simulado.md` | Matriz de pruebas (esperado y obtenido), métricas y experimento de ventana de contexto |
 | `informe_pruebas_real.md` | Lo mismo con Gemini real _(se genera con `--modo real`)_ |
 | `hallazgos.md` | Hallazgos, acciones correctivas y verificación |
-| `resultado_pytest.txt` | Salida detallada de las 67 pruebas |
+| `resultado_pytest.txt` | Salida detallada de las 70 pruebas |
 | `capturas/` | Capturas de la interfaz en escritorio y celular (tomadas con el modelo simulado) |
 | `metricas_*.csv` / `.jsonl` | Métricas por turno |
 
@@ -161,6 +161,14 @@ enrutador y mensajes de error amigables.
 
 - **Build:** `pip install -r requirements.txt`
 - **Start:** `streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true`
+
+## Límites del plan gratuito de Gemini
+
+Cada modelo tiene sus propios límites de solicitudes por minuto (RPM) y por día (RPD), que cambian con el
+tiempo. Consulta los vigentes de tu clave en <https://ai.dev/rate-limit>. Al 2 de noviembre de 2026,
+`gemini-3.5-flash-lite` permitía 15 RPM y 500 RPD, mientras que `gemini-3.8-flash` solo 5 RPM y 20 RPD,
+que se agotan con 5 a 8 preguntas (cada una usa de 2 a 4 llamadas al modelo). Si cambia el modelo, ajusta
+`GEMINI_MODEL`. Para ejecutar las evidencias reales con otro ritmo, usa `EVID_LLAMADAS_POR_MINUTO`.
 
 ## Limitaciones conocidas
 

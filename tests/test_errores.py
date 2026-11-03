@@ -12,6 +12,8 @@ from core.errores import TurnoFallido, es_transitorio, mensaje_amigable
         (GraphRecursionError("limite"), "demasiadas vueltas"),
         (RuntimeError("429 RESOURCE_EXHAUSTED quota exceeded"), "límite de uso"),
         (RuntimeError("API key not valid"), "GEMINI_API_KEY"),
+        (RuntimeError("429 RESOURCE_EXHAUSTED requests per day limit exceeded on Free Tier"), "cuota diaria"),
+        (RuntimeError("quotaId: GenerateRequestsPerDayPerProjectPerModel-FreeTier 429"), "cuota diaria"),
         (TimeoutError("request timed out"), "no respondió a tiempo"),
         (ValueError("algo raro"), "error inesperado"),
         # errores reales de Gemini observados al probar con la API

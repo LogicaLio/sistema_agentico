@@ -1,5 +1,5 @@
 ============================= test session starts ==============================
-collecting ... collected 67 items
+collecting ... collected 70 items
 
 tests/test_app.py::test_la_app_arranca_sin_excepciones PASSED           
 tests/test_app.py::test_enviar_un_mensaje_muestra_respuesta_y_metricas PASSED
@@ -10,10 +10,12 @@ tests/test_app.py::test_sin_api_key_muestra_error_de_configuracion PASSED
 tests/test_errores.py::test_mensajes_amigables[excepcion0-demasiadas vueltas] PASSED
 tests/test_errores.py::test_mensajes_amigables[excepcion1-l\xedmite de uso] PASSED
 tests/test_errores.py::test_mensajes_amigables[excepcion2-GEMINI_API_KEY] PASSED
-tests/test_errores.py::test_mensajes_amigables[excepcion3-no respondi\xf3 a tiempo] PASSED
-tests/test_errores.py::test_mensajes_amigables[excepcion4-error inesperado] PASSED
-tests/test_errores.py::test_mensajes_amigables[excepcion5-GEMINI_MODEL] PASSED
-tests/test_errores.py::test_mensajes_amigables[excepcion6-saturado] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion3-cuota diaria] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion4-cuota diaria] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion5-no respondi\xf3 a tiempo] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion6-error inesperado] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion7-GEMINI_MODEL] PASSED
+tests/test_errores.py::test_mensajes_amigables[excepcion8-saturado] PASSED
 tests/test_errores.py::test_desempaqueta_turno_fallido PASSED           
 tests/test_errores.py::test_el_mensaje_no_filtra_detalles_tecnicos PASSED
 tests/test_errores.py::test_clasifica_errores_transitorios[503 UNAVAILABLE high demand-True] PASSED
@@ -35,6 +37,7 @@ tests/test_grafo.py::test_la_traza_es_por_turno_no_acumulada PASSED
 tests/test_grafo.py::test_respaldo_si_el_enrutador_no_devuelve_json_valido PASSED
 tests/test_grafo.py::test_bucle_de_herramientas_se_corta_por_limite_de_recursion PASSED
 tests/test_grafo.py::test_error_del_modelo_se_registra_y_se_propaga PASSED
+tests/test_grafo.py::test_el_registro_conserva_el_error_completo PASSED 
 tests/test_grafo.py::test_cada_turno_queda_en_el_jsonl PASSED           
 tests/test_grafo.py::test_ventana_recorta_y_empieza_en_un_mensaje_humano PASSED
 tests/test_grafo.py::test_ventana_nunca_deja_un_toolmessage_huerfano PASSED
@@ -69,4 +72,4 @@ tests/test_tools.py::test_calendario_y_asignatura PASSED
 tests/test_tools.py::test_rag_tool_devuelve_fuente_y_texto PASSED       
 tests/test_tools.py::test_rag_tool_sin_resultados PASSED                
 
-============================== 67 passed in 3.16s ==============================
+============================== 70 passed in 3.87s ==============================

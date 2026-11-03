@@ -34,7 +34,10 @@ def mensaje_amigable(exc: Exception) -> str:
         return ("⚠️ El agente dio demasiadas vueltas sin llegar a una respuesta y se detuvo por seguridad. "
                 "Intenta reformular la pregunta de forma más concreta.")
     if any(s in texto for s in ("429", "resource_exhausted", "quota", "rate limit", "rate_limit")):
-        return ("⏳ Se alcanzó el límite de uso del modelo (cuota o solicitudes por minuto). "
+        if "per day" in texto or "perday" in texto:
+            return ("📅 Se agotó la cuota diaria del modelo. Se renueva en unas horas; quien administra la "
+                    "app puede usar otro modelo (variable GEMINI_MODEL) o ampliar el plan.")
+        return ("⏳ Se alcanzó el límite de uso del modelo (solicitudes por minuto). "
                 "Espera un momento e inténtalo de nuevo.")
     if any(s in texto for s in ("404", "not_found", "no longer available", "modelnotfound")):
         return ("🤖 El modelo configurado ya no está disponible. Quien administra la app debe actualizar "

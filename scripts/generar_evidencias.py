@@ -62,6 +62,13 @@ if args.modo == "simulado":
 
 
 REINTENTOS = 0  # reintentos por errores transitorios del servicio (solo modo real)
+# Llamadas por minuto que el script se permite en modo real (por debajo del límite RPM de tu plan).
+LLAMADAS_POR_MINUTO = int(os.getenv("EVID_LLAMADAS_POR_MINUTO", "10"))
+
+
+def pausa_por_limite(metricas: dict) -> None:
+    """Espera lo necesario para no superar el límite de solicitudes por minuto."""
+    time.sleep(max(1.0, metricas.get("llamadas_llm", 1) * 60 / LLAMADAS_POR_MINUTO))
 
 
 def turno(grafo, pregunta, hilo, mismo_hilo=False):
@@ -111,7 +118,7 @@ for id_, func, pregunta, pasos_esp, tools_esp in ESCENARIOS:
                       f"{fallo.metricas.get('latencia_ms', 0):.0f}"))
         turnos.append(fallo.metricas)
     if args.modo == "real":
-        time.sleep(1.5)  # respeta el límite de solicitudes por minuto del plan gratuito
+        pausa_por_limite(turnos[-1])
 
 # ---------------- 2. Experimento: ventana deslizante de contexto ----------------
 def correr_conversacion(maximo: int, rondas: int = 8):
@@ -122,7 +129,7 @@ def correr_conversacion(maximo: int, rondas: int = 8):
         r = turno(grafo, "¿Qué clases tengo el lunes?", f"ventana-{args.modo}-{maximo}", mismo_hilo=True)
         serie.append((r.metricas["chars_contexto_max"], r.metricas["tokens_entrada"]))
         if args.modo == "real":
-            time.sleep(1.5)
+            pausa_por_limite(r.metricas)
     return serie
 
 

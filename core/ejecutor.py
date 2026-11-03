@@ -46,7 +46,7 @@ def ejecutar_turno(grafo, texto: str, estudiante: dict, thread_id: str) -> Resul
     except Exception as exc:
         metricas = REGISTRO.cerrar_turno(
             turno_id, thread_id, texto, "", (time.perf_counter() - t0) * 1000,
-            error=f"{type(exc).__name__}: {exc}"[:300],
+            error=f"{type(exc).__name__}: {exc}"[:1500],
         )
         raise TurnoFallido(exc, metricas) from exc
 

@@ -76,7 +76,7 @@ def _invocar(state: AcademicState, nodo: str, modelo, mensajes: list[BaseMessage
     except Exception as exc:
         REGISTRO.evento(
             state.get("turno_id"), "llm", nodo=nodo, ms=(time.perf_counter() - t0) * 1000,
-            error=f"{type(exc).__name__}: {exc}"[:200], chars_contexto=_chars(mensajes),
+            error=f"{type(exc).__name__}: {exc}"[:1500], chars_contexto=_chars(mensajes),
         )
         raise
     REGISTRO.evento(
@@ -96,7 +96,7 @@ def enrutador_node(state: AcademicState) -> dict:
     except Exception as exc:
         REGISTRO.evento(
             state.get("turno_id"), "llm", nodo="enrutador", ms=(time.perf_counter() - t0) * 1000,
-            error=f"{type(exc).__name__}: {exc}"[:200], chars_contexto=_chars(mensajes),
+            error=f"{type(exc).__name__}: {exc}"[:1500], chars_contexto=_chars(mensajes),
         )
         raise
     REGISTRO.evento(

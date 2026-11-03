@@ -1,0 +1,83 @@
+# Informe de pruebas y métricas — modo REAL
+
+- Fecha de ejecución: 2026-11-02 22:58
+- Modelo: Gemini real (gemini-3.5-flash-lite)
+- Resultado: **8/8 escenarios cumplen**
+- Reintentos por saturación o límites temporales del servicio (503/429/timeout): 0
+
+## 1. Pruebas funcionales de integración (LangChain · LangGraph · memoria · estado · RAG · Tools)
+
+| ID | Funcionalidad | Pregunta | Resultado esperado | Resultado obtenido | Estado | Llamadas LLM | Tokens | Latencia (ms) |
+|---|---|---|---|---|---|---|---|---|
+| T01 | Ruta conceptual (sin herramientas) | ¿Qué es un crédito académico? | enrutador ➔ nodo_conceptual · tools: — | enrutador ➔ nodo_conceptual · tools: — | ✅ Cumple | 2 | 532 | 4190 |
+| T02 | Tool consultar_horario | ¿Qué clases tengo el lunes? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_horario | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_horario | ✅ Cumple | 3 | 1735 | 2735 |
+| T03 | Ciclo ReAct con 2 herramientas | ¿Hoy tengo clase? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: obtener_fecha, consultar_horario | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: obtener_fecha, consultar_horario | ✅ Cumple | 4 | 2494 | 3248 |
+| T04 | Tool priorizar_actividades | Prioriza mis actividades pendientes | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: priorizar_actividades | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: priorizar_actividades | ✅ Cumple | 3 | 2108 | 3331 |
+| T05 | Tool consultar_calendario_academico | ¿Cuándo terminan las clases? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_calendario_academico | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_calendario_academico | ✅ Cumple | 3 | 1611 | 2437 |
+| T06 | Tool consultar_informacion_asignatura | ¿Cuántos créditos tiene Sistemas Agénticos? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_informacion_asignatura | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_informacion_asignatura | ✅ Cumple | 3 | 1629 | 3206 |
+| T07 | Tool consultar_actividades | Muéstrame las actividades de Redes | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_actividades | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_actividades | ✅ Cumple | 3 | 1674 | 2736 |
+| T08 | RAG: base de conocimiento | ¿Qué pasa si tengo muchas faltas por inasistencia? | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_base_conocimiento | enrutador ➔ agente_academico ➔ herramientas ➔ agente_academico · tools: consultar_base_conocimiento | ✅ Cumple | 3 | 1859 | 2789 |
+
+## 2. Métricas de observabilidad
+
+| Indicador | Valor |
+|---|---|
+| Turnos ejecutados | 8 |
+| Llamadas totales al modelo | 24 |
+| Tokens totales | 13.642 |
+| Latencia media por turno | 3084 ms |
+| Latencia p95 | 4190 ms |
+| Errores | 0 |
+
+**Uso de herramientas**
+
+| Herramienta | Invocaciones |
+|---|---|
+| `consultar_horario` | 2 |
+| `obtener_fecha` | 1 |
+| `priorizar_actividades` | 1 |
+| `consultar_calendario_academico` | 1 |
+| `consultar_informacion_asignatura` | 1 |
+| `consultar_actividades` | 1 |
+| `consultar_base_conocimiento` | 1 |
+
+## 3. Optimización: ventana deslizante de contexto
+
+Se repitió la misma consulta 8 veces en un mismo hilo, sin ventana y con ventana de 14 mensajes. Se mide el contexto más grande enviado al modelo en cada turno.
+
+| Turno | Sin ventana (caracteres) | Con ventana (caracteres) | Sin ventana (tokens entrada) | Con ventana (tokens entrada) |
+|---|---|---|---|---|
+| 1 | 843 | 843 | 1.593 | 1.593 |
+| 2 | 1.268 | 1.272 | 1.020 | 1.021 |
+| 3 | 1.693 | 1.701 | 1.111 | 1.113 |
+| 4 | 2.118 | 2.130 | 1.202 | 1.205 |
+| 5 | 2.543 | 2.559 | 1.293 | 1.297 |
+| 6 | 2.968 | 2.988 | 1.384 | 1.389 |
+| 7 | 3.393 | 2.753 | 1.475 | 1.258 |
+| 8 | 3.818 | 3.182 | 1.566 | 1.350 |
+
+**Reducción en el turno 8:** 17% de caracteres y 14% de tokens de entrada. Sin ventana el contexto crece con cada turno (crecimiento acumulativo); con ventana se estabiliza.
+
+## 4. Hallazgos y acciones correctivas
+
+Cada hallazgo indica cómo se detectó, la acción correctiva y cómo se verificó. Los hallazgos H1 a H8 se
+detectaron durante el desarrollo (pruebas automáticas, revisión del código de la v03, revisión visual
+de la interfaz e integración al repositorio); H9 a H12 aparecieron al probar con Gemini real; H13 en
+adelante son para que completes con lo que encuentres en tus siguientes ejecuciones.
+
+| ID | Hallazgo | Cómo se detectó | Acción correctiva | Verificación |
+|---|---|---|---|---|
+| H1 | El RAG devolvía el documento equivocado para "pierdo la materia por inasistencia" (puntajes casi empatados: 1,49 contra 1,47). Los fragmentos mezclaban secciones distintas y el estudiante dice "materia" mientras el reglamento dice "asignatura". | Prueba automática `test_recupera_el_documento_correcto` | Fragmentos que respetan los títulos de sección (`_secciones`) y normalización de sinónimos (`materia`, `curso` → `asignatura`) | La prueba pasa y se agregaron 3 pruebas de fragmentación y sinónimos |
+| H2 | El historial completo se reenviaba al modelo en cada turno: el contexto crece sin límite (en un chat largo, más tokens, más costo y más latencia). | Revisión de la v03 y mediciones de la sección 3 | Ventana deslizante `ventana_contexto` (`MAX_MENSAJES_CONTEXTO`, 14 por defecto) que siempre empieza en un mensaje del usuario para no separar una llamada a herramienta de su respuesta | `test_ventana_nunca_deja_un_toolmessage_huerfano` y tabla de la sección 3 |
+| H3 | Un bucle de herramientas podía consumir llamadas indefinidamente (riesgo "Agent Runaway Loop") y la v03 no tenía tope por turno. | Revisión de la v03; simulación con `siempre_tools=True` | `recursion_limit` configurable (`RECURSION_LIMIT`, 12) y mensaje amigable para `GraphRecursionError` | `test_bucle_de_herramientas_se_corta_por_limite_de_recursion` |
+| H4 | Si el enrutador no devolvía un JSON válido, el turno fallaba con un error técnico. | Revisión de la v03 | `with_structured_output(..., include_raw=True)` y ruta de respaldo a `herramientas` | `test_respaldo_si_el_enrutador_no_devuelve_json_valido` |
+| H5 | Los errores del modelo (cuota 429, clave inválida, timeout) llegaban al estudiante como texto técnico, con riesgo de mostrar datos internos. | Revisión de la v03 | `core/errores.py` traduce cada tipo de fallo a un mensaje claro sin detalles técnicos | `tests/test_errores.py` y `test_error_del_modelo_se_muestra_amigable_y_la_app_sigue_viva` |
+| H6 | En escritorio, el borde superior del encabezado azul quedaba tapado por la barra de Streamlit. | Revisión visual con capturas de pantalla de la app en ejecución (Chromium) | Se aumentó el `padding-top` del contenedor principal en `ui/estilos.py` | Nueva captura: el encabezado se ve completo |
+| H7 | En celular, la barra lateral se abría por defecto y cubría todo el chat: al entrar, el estudiante no veía la conversación. | Revisión visual con captura a 390 px de ancho | `initial_sidebar_state="auto"` (abierta en escritorio y cerrada en celular) | Nueva captura a 390 px: se ve el chat y la barra se abre con el botón ☰ |
+| H8 | Las pruebas comprobaban valores de los datos de ejemplo (por ejemplo, 5 actividades o el fin de clases el 27 de noviembre) y habrían fallado al reemplazar `data/` por datos reales. | Revisión de la integración al repositorio real (`git status` y `git diff`) | Datos propios de las pruebas en `tests/datos_prueba/` y fixture automático (`tests/datos.py`, `conftest.py`); el índice RAG lee su carpeta al usarse | Las 70 pruebas pasan también con `data/` vaciado y con otro contenido |
+| H9 | Al probar con Gemini real, la app respondía siempre "Ocurrió un error inesperado". El log (`logs/metricas.jsonl`) mostró `404 NOT_FOUND`: el modelo `gemini-2.5-flash` ya no está disponible para cuentas nuevas. | Prueba manual con Gemini real y lectura del campo `error` del registro de observabilidad | Modelo por defecto actualizado a `gemini-3.8-flash` (código, `render.yaml`, README y `.env.example`; sigue siendo configurable con `GEMINI_MODEL`) y mensaje claro para este caso en `core/errores.py` | La app dejó de devolver 404 con el modelo nuevo; prueba `test_mensajes_amigables` |
+| H10 | Con el modelo nuevo apareció `503 UNAVAILABLE: high demand`: saturación temporal del servicio de Google. La app lo mostraba como fallo de conexión. | Prueba manual con Gemini real y lectura del registro de observabilidad | Mensaje específico de saturación, más reintentos por llamada (`LLM_MAX_RETRIES`, 4 por defecto) y reintentos con espera creciente en el generador de evidencias real (`core/reintentos.py`) | Pruebas `test_reintentos.py` y `test_clasifica_errores_transitorios`. Confirma en tu ejecución real con `--modo real` (el informe indica cuántos reintentos hubo) |
+| H11 | El registro de errores cortaba el texto a 300 caracteres, justo antes del detalle del límite que da Google en un 429 (qué cuota, cuánto vale y cuándo se renueva), lo que impedía diagnosticar la causa. | Lectura de `logs/metricas.jsonl` al investigar un `429 RESOURCE_EXHAUSTED` con Gemini real | El registro conserva hasta 1.500 caracteres del error (`core/ejecutor.py` y `graph/nodes.py`) | `test_el_registro_conserva_el_error_completo` |
+| H12 | El plan gratuito limita cada modelo por separado. `gemini-3.8-flash` permitía solo 20 solicitudes por día (24 de 20 usadas) y 5 por minuto. Como cada pregunta usa de 2 a 4 llamadas, la cuota se agotaba con unas 5 a 8 preguntas y la app respondía con error. `gemini-3.5-flash-lite` permite 500 por día y 15 por minuto. | Prueba manual con Gemini real, error `429` con `limit: 20 ... per day` y página de uso de Google AI Studio | Modelo por defecto cambiado a `gemini-3.5-flash-lite`; mensaje específico para cuota diaria; pausas proporcionales al límite por minuto en el generador de evidencias reales (`EVID_LLAMADAS_POR_MINUTO`) | La app respondió las preguntas de prueba con el modelo nuevo; `test_mensajes_amigables` cubre el mensaje de cuota diaria |
+| H13 | _(completa con lo que encuentres en tus siguientes ejecuciones)_ | | | |
+

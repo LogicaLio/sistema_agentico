@@ -68,6 +68,16 @@ def test_error_del_modelo_se_registra_y_se_propaga(usar_modelo, registro_tempora
     assert registro_temporal.leer_historial()[-1]["error"]
 
 
+def test_el_registro_conserva_el_error_completo(usar_modelo):
+    """Un error largo (como los 429 de Google, que traen el detalle del límite al final) no se corta."""
+    largo = "429 RESOURCE_EXHAUSTED " + "detalle " * 100 + "limit: 20 per day"
+    usar_modelo(ModeloFalso(plan_simulado, error=RuntimeError(largo)))
+    with pytest.raises(TurnoFallido) as exc:
+        ejecutar_turno(crear_grafo_academico(), "hola", ESTUDIANTE, "h")
+    assert len(exc.value.metricas["error"]) > 300
+    assert exc.value.metricas["error"].endswith("limit: 20 per day")
+
+
 def test_cada_turno_queda_en_el_jsonl(modelo_normal, registro_temporal):
     grafo = crear_grafo_academico()
     for pregunta in ("¿Qué es un crédito académico?", "¿Qué clases tengo el lunes?"):
