@@ -1,0 +1,4 @@
+ts,turno_id,thread_id,pregunta,respuesta_chars,ruta,pasos,llamadas_llm,tokens_entrada,tokens_salida,tokens_total,chars_contexto_max,ms_llm,ms_tools,herramientas,errores_tools,latencia_ms,error
+2026-11-03T04:18:28,0d2d56e1,a28c0dd8-bad8-425d-beb8-b2dace08d23b,¿Qué es un crédito académico?,1313,conceptual,"['enrutador', 'nodo_conceptual']",2,179,326,505,571,3155.4,0.0,[],0,4223.5,
+2026-11-03T04:18:54,09da723d,a28c0dd8-bad8-425d-beb8-b2dace08d23b,¿Hoy tengo clase?,324,herramientas,"['enrutador', 'agente_academico', 'herramientas', 'agente_academico', 'herramientas', 'agente_academico']",4,3225,184,3409,2425,2899.6,4.9,"['obtener_fecha', 'consultar_horario']",0,2926.1,
+2026-11-03T04:20:16,29400031,a28c0dd8-bad8-425d-beb8-b2dace08d23b,¿Qué pasa si falto mucho a clases?,637,herramientas,"['enrutador', 'agente_academico', 'herramientas', 'agente_academico']",3,3014,240,3254,4309,2668.0,4.5,['consultar_base_conocimiento'],0,2688.3,
